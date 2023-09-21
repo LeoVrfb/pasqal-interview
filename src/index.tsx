@@ -1,13 +1,27 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as ReactDOM from "react-dom";
 import data from "./data.json";
-
-import CrossIcon from "./icons/cross.svg";
-
 import "./index.css";
+import { getData, Item } from './api';
+import MultiSelectDropdown from "./components/DropdownSelect";
 
 const Root = () => {
-  const [selectedItems, setSelectedItems] = useState([]);
+
+  const [selectedItems, setSelectedItems] = useState<Item[]>([]);
+  const [searchItems, setSearchItems] = useState('');
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getData(searchItems);
+      setSelectedItems(data);
+    };
+
+    fetchData();
+  }, [searchItems]);
+
+  const [selectedValues, setSelectedValues] = useState<typeof selectedItems[0] | undefined>(undefined);
+
 
   return (
     <div className="Root">
@@ -16,19 +30,20 @@ const Root = () => {
         <h1>Multiselect</h1>
       </div>
       <div className="Root__content">
-        <div>{selectedItems.length} items selected:</div>
+        <div>{selectedValues === undefined ? 0 : [selectedValues].length} items selected:</div>
         <br />
         <div>
-          {selectedItems.map((e) => (
+          {[selectedValues].map((e) => (
             <div>{JSON.stringify(e)}</div>
           ))}
         </div>
       </div>
       <div className="Root__separator" />
+      <div className="Root__select">
 
-      {/* TODO: Insert your component below */}
-      <CrossIcon />
-      <div className="Root__select">PUT THE COMPONENT HERE</div>
+        <MultiSelectDropdown options={selectedItems} value={selectedValues} onChange={o => setSelectedValues(o)} />
+
+      </div>
     </div>
   );
 };

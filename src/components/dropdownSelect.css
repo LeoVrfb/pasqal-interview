@@ -72,6 +72,22 @@
     color: white;
 }
 
+.search-input {
+    padding: .25em .5em;
+    margin: 0;
+    width: 100%;
+    border: none;
+}
+
+.search-input:focus {
+    outline: none;
+}
+
+.search-bar {
+    display: flex;
+    width: 100%;
+}
+
 .option-badge {
     display: flex;
     align-items: center;
@@ -106,7 +122,7 @@
     transition: transform 0.2s ease;
 }
 
-/* .clear-btn:focus,
-.clear-btn:hover {
-    color: #333;
-} */
+.clear-btn {
+    color: #a13c3c;
+    cursor: pointer;
+}

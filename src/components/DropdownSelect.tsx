@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import './dropdownSelect.css';
-import { Item } from '../api'
-import CrossIcon from "../icons/cross.svg";
+import { Item, getData } from '../api'
+import SearchIcon from '../icons/search.svg'
+import CrossIcon from '../icons/cross.svg'
 
 type MultipleSelectProps = {
     multiple: true
@@ -24,23 +25,46 @@ const MultiSelectDropdown = ({ multiple, value, onChange, options }: SelectProps
     const [isOpen, setIsOpen] = useState(false);
     const [highlightedIndex, setHighlightedIndex] = useState(0);
     const [hasSelection, setHasSelection] = useState(false);
+    const [searchInput, setSearchInput] = useState('');
+    const [filtered, setFiltered] = useState<Item[]>([]);
 
-    // function clearOptions() {
-    //     multiple ? onChange([]) : onChange(undefined)
-    // }
+
+
+    useEffect(() => {
+        let isMounted = true;
+
+        const fetchData = async () => {
+            // Appelle la fonction getData avec la valeur de searchInput.
+            const filteredData = await getData(searchInput);
+
+            // Met à jour filteredOptions uniquement si le composant est toujours monté.
+            if (isMounted) {
+                setFiltered(filteredData);
+            }
+        };
+        // Appelle fetchData lorsque searchInput change.
+        fetchData();
+        // Nettoie la variable isMounted lorsque le composant est démonté.
+        return () => {
+            isMounted = false;
+        };
+    }, [searchInput]);
+
+    // J'ai toujours le problème de 'Entretien ménager' que je n'arrive pas à résoudre. Je sais que ça doit venir de parentId? mais incapable de débug...
+
+
 
     function selectOption(option: Item) {
-
         if (multiple === true) {
-            if (value.includes(option)) {
-                onChange(value.filter(o => o !== option))
-            } else {
-                onChange([...value, option])
-            }
+            const updatedValue = value.includes(option)
+                ? value.filter((o) => o !== option)
+                : [...value, option];
+            onChange(updatedValue);
         } else {
-            if (option !== value) onChange(option)
+            onChange(option !== value ? option : undefined);
         }
-        setHasSelection(true)
+        setHasSelection(true);
+        setSearchInput('');
     }
 
     function isOptionSelected(option: Item) {
@@ -53,16 +77,16 @@ const MultiSelectDropdown = ({ multiple, value, onChange, options }: SelectProps
         }
     }, [isOpen])
 
+
     return (
         <>
 
-            <div onClick={() => setIsOpen(prev => !prev)} onBlur={() => setIsOpen(false)} tabIndex={0} className='container'>
+            <div onClick={() => setIsOpen(prev => !prev)} tabIndex={0} className='container'>
                 <span className={`values ${hasSelection ? '' : 'placeholder'}`}>
                     {hasSelection ? (
                         multiple === true ? value.map((v, index) => (
                             <button
                                 key={index}
-
                                 className="option-badge"
                             >
                                 {v.label}
@@ -74,18 +98,37 @@ const MultiSelectDropdown = ({ multiple, value, onChange, options }: SelectProps
                             </button>
                         )) : value?.label)
                         : (
-                            "Select your item..."
+                            "select your tiems..."
                         )}
                 </span>
-                {/* <button onClick={e => {
-                    e.stopPropagation()
-                    clearOptions()
-                }} className='clear-btn'>&times;</button> */}
 
                 <div className="divider"></div>
                 <div className="caret"></div>
-                <ul className={`optionsSelect ${isOpen ? "show" : ""}`}>
-                    {options.map((option, index) => (
+
+                <ul className={`optionsSelect ${isOpen ? "show" : ""}`} >
+                    <div className='search-bar'  >
+                        <SearchIcon className="search-icon" />
+                        <input
+                            type="text"
+                            placeholder='search your item...'
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
+                            onClick={e => {
+                                setIsOpen(true)
+                                e.stopPropagation()
+                            }}
+                            className="search-input"
+                        />
+
+                        < CrossIcon className="clear-btn"
+                            onClick={(e: any) => {
+                                e.stopPropagation()
+                                setIsOpen(true)
+                                setSearchInput('')
+                            }} />
+
+                    </div>
+                    {filtered.map((option, index) => (
                         <li onClick={e => {
                             e.stopPropagation()
                             selectOption(option)
@@ -98,6 +141,7 @@ const MultiSelectDropdown = ({ multiple, value, onChange, options }: SelectProps
                         </li>
                     ))}
                 </ul>
+
             </div>
         </>
     );

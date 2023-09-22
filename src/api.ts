@@ -1,9 +1,9 @@
 import data from "./data.json";
 
 export interface Item {
-  id: number;
-  label: string;
-  parentId?: number;
+  id: number
+  label: string
+  parentId?: number
 }
 
 /**

@@ -21,6 +21,9 @@
 
 .values {
     flex-grow: 1;
+    display: flex;
+    gap: .5em;
+    flex-wrap: wrap;
 }
 
 .divider {
@@ -68,3 +71,42 @@
     background-color: hsl(200, 100%, 50%);
     color: white;
 }
+
+.option-badge {
+    display: flex;
+    align-items: center;
+    border: .1em solid #777;
+    border-radius: .25em;
+    padding: .15em .25em;
+    gap: .25em;
+    cursor: pointer;
+    background: none;
+    outline: none;
+}
+
+.option-badge:hover,
+.option-badge:focus {
+    color: hsl(132, 93%, 21%);
+    border-color: hsl(132, 93%, 21%);
+}
+
+.option-badge:hover>.remove-btn,
+.option-badge:focus>.remove-btn {
+    color: hsl(132, 93%, 21%);
+}
+
+.option-badge>.remove-btn {
+    font-size: 1.25em;
+    color: #777;
+}
+
+.option-badge>.remove-btn:hover {
+    /* An effect to precise it's ONLY by clicking the cross it's working */
+    transform: scale(1.2);
+    transition: transform 0.2s ease;
+}
+
+/* .clear-btn:focus,
+.clear-btn:hover {
+    color: #333;
+} */
